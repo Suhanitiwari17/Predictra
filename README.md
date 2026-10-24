@@ -135,6 +135,13 @@ In one validation-guided experiment, a threshold of 0.35 achieved the following 
 
 These are exploratory results, not an independent final performance estimate. The test split had also been used in earlier threshold experiments. Further evaluation on an untouched test set is needed before reporting definitive model performance.
 
+ ## Dashboard Preview
+
+![Predictra Dashboard](screenshots/Dashboard.png)
+
+## Prediction Results and History
+
+![Prediction Results](screenshots/Prediction_results.png)
 ## Limitations
 
 - The AI4I 2020 dataset is synthetic and may not represent actual industrial operating conditions.
