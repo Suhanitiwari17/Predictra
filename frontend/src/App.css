@@ -1362,3 +1362,69 @@ button.state-pill:hover {
     flex-wrap: wrap;
   }
 }
+
+.history-diagnostics {
+  min-width: 115px;
+  color: var(--machine-text);
+  font-size: 11px;
+}
+
+.history-diagnostics summary {
+  color: var(--machine-orange);
+  font-weight: 700;
+  cursor: pointer;
+  padding: 6px 0;
+}
+
+.history-diagnostics-content {
+  width: 320px;
+  max-width: 70vw;
+  max-height: 360px;
+  overflow-y: auto;
+  white-space: normal;
+  padding: 10px;
+  margin-top: 6px;
+  background: #181b16;
+  border: 1px solid var(--machine-border);
+  border-radius: 5px;
+}
+
+.history-diagnostic-item {
+  padding: 10px;
+  margin-bottom: 8px;
+  background: #20231e;
+  border: 1px solid var(--machine-border);
+  border-left: 3px solid #69705d;
+  border-radius: 4px;
+}
+
+.history-diagnostic-item:last-child {
+  margin-bottom: 0;
+}
+
+.history-diagnostic-item.mode-flagged {
+  border-left-color: var(--machine-orange);
+}
+
+.history-diagnostic-item.mode-unknown {
+  border-left-style: dashed;
+}
+
+.history-diagnostic-item > strong {
+  color: var(--machine-text);
+}
+
+.history-diagnostic-item p {
+  margin-top: 7px;
+  color: var(--machine-muted);
+  line-height: 1.6;
+  white-space: normal;
+}
+
+.history-diagnostic-item p strong {
+  color: var(--machine-orange);
+}
+
+.history-table td {
+  vertical-align: top;
+}

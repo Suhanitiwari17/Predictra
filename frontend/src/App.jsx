@@ -677,6 +677,7 @@ useEffect(() => {
             <th>Time</th>
             <th>Machine</th>
             <th>Failure result</th>
+            <th>Diagnostics</th>
             <th>Probability</th>
             <th>Anomaly</th>
           </tr>
@@ -709,6 +710,51 @@ useEffect(() => {
                   {item.is_anomaly ? "Detected" : "Not detected"}
                 </span>
               </td>
+
+<td>
+  <details className="history-diagnostics">
+    <summary>View details</summary>
+
+    <div className="history-diagnostics-content">
+      {(item.possible_failures || []).map((failure) => (
+        <div
+          key={failure.code}
+          className={`history-diagnostic-item ${
+            failure.indicated === true
+              ? "mode-flagged"
+              : failure.indicated === null
+                ? "mode-unknown"
+                : "mode-clear"
+          }`}
+        >
+          <strong>
+            {failure.code} — {failure.name}
+          </strong>
+
+          <p>{failure.indicated === true
+            ? "Indicator triggered"
+            : failure.indicated === false
+              ? "Not indicated"
+              : "Not assessable"}
+          </p>
+
+          <p>{failure.reason}</p>
+
+          <p>
+            <strong>Suggested check:</strong>{" "}
+            {failure.suggested_check}
+          </p>
+        </div>
+      ))}
+
+      {(!item.possible_failures ||
+        item.possible_failures.length === 0) && (
+        <p>No diagnostic details available.</p>
+      )}
+    </div>
+  </details>
+</td>
+
             </tr>
           ))}
         </tbody>

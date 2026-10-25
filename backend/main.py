@@ -1,6 +1,7 @@
 
 import os
 import math
+import json
 from pathlib import Path
 
 import sqlite3
@@ -19,6 +20,7 @@ models_path = project_root / "models"
 database_path = project_root / "data" / "predictions.db"
 
 
+
 def initialize_database():
     with sqlite3.connect(database_path) as connection:
         connection.execute("""
@@ -33,24 +35,52 @@ def initialize_database():
                 tool_wear REAL NOT NULL,
                 failure_prediction INTEGER NOT NULL,
                 failure_probability REAL NOT NULL,
-                is_anomaly INTEGER NOT NULL
+                is_anomaly INTEGER NOT NULL,
+                diagnostics_json TEXT
             )
         """)
+
+        columns = {
+            row[1]
+            for row in connection.execute(
+                "PRAGMA table_info(prediction_history)"
+            ).fetchall()
+        }
+
+        if "diagnostics_json" not in columns:
+            connection.execute(
+                "ALTER TABLE prediction_history "
+                "ADD COLUMN diagnostics_json TEXT"
+            )
 
 
 initialize_database()
 
-def save_prediction(readings, failure_prediction,
-                   failure_probability, is_anomaly):
+
+
+def save_prediction(
+    readings,
+    failure_prediction,
+    failure_probability,
+    is_anomaly,
+    possible_failures,
+):
     with sqlite3.connect(database_path) as connection:
         connection.execute("""
             INSERT INTO prediction_history (
-                timestamp, machine_type, air_temperature,
-                process_temperature, rotational_speed, torque,
-                tool_wear, failure_prediction,
-                failure_probability, is_anomaly
+                timestamp,
+                machine_type,
+                air_temperature,
+                process_temperature,
+                rotational_speed,
+                torque,
+                tool_wear,
+                failure_prediction,
+                failure_probability,
+                is_anomaly,
+                diagnostics_json
             )
-            VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+            VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
         """, (
             datetime.now(timezone.utc).isoformat(),
             readings.type,
@@ -62,6 +92,7 @@ def save_prediction(readings, failure_prediction,
             failure_prediction,
             failure_probability,
             int(is_anomaly),
+            json.dumps(possible_failures),
         ))
 
 failure_model = joblib.load(models_path / "failure_model.joblib")
@@ -266,12 +297,15 @@ def predict(readings: SensorReadings):
     )
     is_anomaly = anomaly_prediction == -1
 
+    possible_failures = diagnose_failure_modes(readings)
+
     save_prediction(
-        readings,
-        failure_prediction,
-        failure_probability,
-        is_anomaly,
-    )
+    readings,
+    failure_prediction,
+    failure_probability,
+    is_anomaly,
+    possible_failures,
+)
 
     return {
         "failure_prediction": failure_prediction,
@@ -284,6 +318,7 @@ def predict(readings: SensorReadings):
         ),
         "possible_failures": diagnose_failure_modes(readings),
     }
+
 @app.get("/history")
 def get_prediction_history():
     with sqlite3.connect(database_path) as connection:
@@ -296,7 +331,35 @@ def get_prediction_history():
             LIMIT 100
         """).fetchall()
 
-    return [dict(row) for row in rows]
+    history = []
+
+    for row in rows:
+        record = dict(row)
+        stored_diagnostics = record.pop("diagnostics_json", None)
+
+        if stored_diagnostics:
+            record["possible_failures"] = json.loads(
+                stored_diagnostics
+            )
+        else:
+            # Older records did not save diagnostics.
+            readings = SensorReadings(
+                type=record["machine_type"],
+                air_temperature=record["air_temperature"],
+                process_temperature=record["process_temperature"],
+                rotational_speed=record["rotational_speed"],
+                torque=record["torque"],
+                tool_wear=record["tool_wear"],
+            )
+
+            record["possible_failures"] = diagnose_failure_modes(
+                readings
+            )
+
+        history.append(record)
+
+    return history
+
 
 @app.get("/analytics")
 def get_analytics():
