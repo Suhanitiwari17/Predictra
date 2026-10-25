@@ -6,6 +6,7 @@ import {
   BrainCircuit,
   CheckCircle2,
   Gauge,
+  History,
   LayoutDashboard,
   Menu,
   RefreshCw,
@@ -25,6 +26,11 @@ import {
   ResponsiveContainer,
 } from "recharts";
 
+const API_BASE_URL = (
+  import.meta.env.VITE_API_BASE_URL ||
+  "http://127.0.0.1:8000"
+).replace(/\/$/, "");
+
 const initialReadings = {
   type: "M",
   air_temperature: 300,
@@ -39,6 +45,23 @@ function App() {
   const [result, setResult] = useState(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
+
+  const [activeNav, setActiveNav] = useState("overview");
+
+function navigateTo(targetId, fallbackId = targetId) {
+  setActiveNav(targetId);
+
+  const target =
+    document.getElementById(targetId) ||
+    document.getElementById(fallbackId);
+
+  if (target) {
+    target.scrollIntoView({
+      behavior: "smooth",
+      block: "start",
+    });
+  }
+}
 
   const [analytics, setAnalytics] = useState({
   total_predictions: 0,
@@ -57,29 +80,38 @@ function App() {
 
   const [history, setHistory] = useState([]);
 const [historyLoading, setHistoryLoading] = useState(true);
+const [historyError, setHistoryError] = useState("");
 const [failureFilter, setFailureFilter] = useState("all");
 const [anomalyFilter, setAnomalyFilter] = useState("all");
 
+
 async function loadHistory() {
+  setHistoryLoading(true);
+  setHistoryError("");
+
   try {
-    const response = await fetch("http://127.0.0.1:8000/history");
+    const response = await fetch(`${API_BASE_URL}/history`);
 
     if (!response.ok) {
-      throw new Error("Could not load history");
+      throw new Error(`History request failed: ${response.status}`);
     }
 
     const data = await response.json();
     setHistory(data);
   } catch (error) {
     console.error("History loading failed:", error);
+    setHistoryError(
+      "Could not refresh history. Check that the backend is running."
+    );
   } finally {
     setHistoryLoading(false);
   }
 }
 
+
 async function loadAnalytics() {
   try {
-    const response = await fetch("http://127.0.0.1:8000/analytics");
+    const response = await fetch(`${API_BASE_URL}/analytics`);
 
     if (!response.ok) {
       throw new Error("Could not load analytics");
@@ -111,7 +143,7 @@ useEffect(() => {
     setResult(null);
 
     try {
-      const response = await fetch("http://127.0.0.1:8000/predict", {
+      const response = await fetch(`${API_BASE_URL}/predict`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(readings),
@@ -165,19 +197,54 @@ useEffect(() => {
           </div>
         </div>
 
-        <p className="nav-heading">WORKSPACE</p>
-        <div className="nav-item active">
-          <LayoutDashboard size={18} /> Overview
-        </div>
-        <div className="nav-item">
-          <Gauge size={18} /> Machine health
-        </div>
-        <div className="nav-item">
-          <BrainCircuit size={18} /> Predictions
-        </div>
-        <div className="nav-item">
-          <AlertTriangle size={18} /> Anomalies
-        </div>
+      
+<p className="nav-heading">WORKSPACE</p>
+
+<button
+  type="button"
+  className={`nav-item ${activeNav === "overview" ? "active" : ""}`}
+  onClick={() => navigateTo("overview")}
+>
+  <LayoutDashboard size={18} />
+  Overview
+</button>
+
+<button
+  type="button"
+  className={`nav-item ${activeNav === "machine-health" ? "active" : ""}`}
+  onClick={() => navigateTo("machine-health")}
+>
+  <Gauge size={18} />
+  Machine health
+</button>
+
+<button
+  type="button"
+  className={`nav-item ${activeNav === "predictions" ? "active" : ""}`}
+  onClick={() => navigateTo("predictions")}
+>
+  <BrainCircuit size={18} />
+  Predictions
+</button>
+
+<button
+  type="button"
+  className={`nav-item ${activeNav === "anomalies" ? "active" : ""}`}
+  onClick={() => navigateTo("anomalies", "predictions")}
+>
+  <AlertTriangle size={18} />
+  Anomalies
+</button>
+
+<button
+  type="button"
+  className={`nav-item ${activeNav === "history-panel" ? "active" : ""}`}
+  onClick={() => navigateTo("history-panel")}
+>
+  <History size={18} />
+  Prediction history
+</button>
+
 
         <div className="sidebar-bottom">
           <div className="status-dot" />
@@ -195,7 +262,7 @@ useEffect(() => {
           <div className="system-status"><span /> ML ENGINE READY</div>
         </header>
 
-        <section className="page-heading">
+        <section className="page-heading" id="overview">
           <div>
             <p className="eyebrow">PREDICTIVE MAINTENANCE</p>
             <h1>Machine intelligence</h1>
@@ -255,7 +322,7 @@ useEffect(() => {
 
 
         <div className="workspace-grid">
-          <section className="panel sensor-panel">
+          <section className="panel sensor-panel" id="machine-health">
             <div className="panel-heading">
               <div>
                 <p className="eyebrow">INPUT CONFIGURATION</p>
@@ -306,7 +373,7 @@ useEffect(() => {
             {error && <p className="error-message">{error}</p>}
           </section>
 
-          <section className="panel results-panel">
+          <section className="panel results-panel" id="predictions">
             <div className="panel-heading">
               <div>
                 <p className="eyebrow">MODEL OUTPUT</p>
@@ -342,15 +409,42 @@ useEffect(() => {
                   <p className="result-note">Estimated by the trained classification model.</p>
                 </div>
 
-                <div className={`anomaly-card ${result.is_anomaly ? "warning" : ""}`}>
+                <div 
+                id="anomalies"
+                className={`anomaly-card ${result.is_anomaly ? "warning" : ""}`}>
                   <div className="anomaly-icon"><Activity size={20} /></div>
                   <div>
                     <strong>{result.is_anomaly ? "Unusual sensor pattern" : "No anomaly flagged"}</strong>
                     <p>{result.is_anomaly ? "The sensor readings appear unusual compared with learned normal patterns." : "The anomaly detector did not flag these readings."}</p>
                   </div>
-                  <span className={`state-pill ${result.is_anomaly ? "alert" : ""}`}>
-                    {result.is_anomaly ? "REVIEW" : "NORMAL"}
-                  </span>
+                  
+{result.is_anomaly ? (
+  <button
+    type="button"
+    className="state-pill alert"
+    onClick={() => {
+      const target = document.getElementById("machine-health");
+
+      if (target) {
+        target.scrollIntoView({
+          behavior: "smooth",
+          block: "start",
+        });
+
+        document.getElementById("air_temperature")?.focus({
+          preventScroll: true,
+        });
+      } else {
+        console.error("Machine sensor form not found.");
+      }
+    }}
+  >
+    REVIEW
+  </button>
+) : (
+  <span className="state-pill">NORMAL</span>
+)}
+
                 </div>
               </>
             )}
@@ -386,26 +480,54 @@ useEffect(() => {
           data={chartData}
           margin={{ top: 10, right: 20, left: 0, bottom: 5 }}
         >
-          <CartesianGrid strokeDasharray="3 3" />
-          <XAxis dataKey="name" />
-          <YAxis
-            tickFormatter={(value) => `${value}%`}
-            domain={[0, 100]}
-          />
-          <Tooltip
-            formatter={(value) => [
-              `${Number(value).toFixed(1)}%`,
-              "Failure probability",
-            ]}
-          />
-          <Line
-            type="monotone"
-            dataKey="probability"
-            stroke="#5865d8"
-            strokeWidth={2.5}
-            dot={{ r: 4 }}
-            activeDot={{ r: 6 }}
-          />
+          
+<CartesianGrid
+  stroke="#3d4237"
+  strokeDasharray="4 4"
+/>
+
+<XAxis
+  dataKey="name"
+  stroke="#858b79"
+  tick={{ fill: "#b7b9ab", fontSize: 11 }}
+/>
+
+<YAxis
+  tickFormatter={(value) => `${value}%`}
+  domain={[0, 100]}
+  stroke="#858b79"
+  tick={{ fill: "#b7b9ab", fontSize: 11 }}
+/>
+
+<Tooltip
+  formatter={(value) => [
+    `${Number(value).toFixed(1)}%`,
+    "Failure probability",
+  ]}
+  contentStyle={{
+    backgroundColor: "#20231e",
+    border: "1px solid #414638",
+    borderRadius: "4px",
+    color: "#ece7d8",
+  }}
+  labelStyle={{ color: "#e58b37" }}
+  itemStyle={{ color: "#ece7d8" }}
+/>
+
+<Line
+  type="monotone"
+  dataKey="probability"
+  stroke="#e58b37"
+  strokeWidth={2.5}
+  dot={{
+    r: 4,
+    fill: "#e58b37",
+    stroke: "#171a16",
+    strokeWidth: 2,
+  }}
+  activeDot={{ r: 6, fill: "#b8cd72" }}
+/>
+
         </LineChart>
       </ResponsiveContainer>
     </div>
@@ -413,19 +535,26 @@ useEffect(() => {
 </section>
 
 
-<section className="panel history-panel">
+<section className="panel history-panel" id="history-panel">
   <div className="panel-heading">
     <div>
       <p className="eyebrow">RECENT ACTIVITY</p>
       <h2>Prediction history</h2>
     </div>
-    <button
-      className="refresh-button"
-      type="button"
-      onClick={loadHistory}
-    >
-      <RefreshCw size={15} /> Refresh
-    </button>
+    
+<button
+  className="refresh-button"
+  type="button"
+  onClick={loadHistory}
+  disabled={historyLoading}
+>
+  <RefreshCw
+    size={15}
+    className={historyLoading ? "spin" : ""}
+  />
+  {historyLoading ? "Refreshing..." : "Refresh"}
+</button>
+
   </div>
 
   <p className="panel-description">
@@ -459,6 +588,11 @@ useEffect(() => {
   </label>
 </div>
 
+{historyError && (
+  <p className="history-error">
+    {historyError}
+  </p>
+)}
 
 
 {historyLoading ? (
