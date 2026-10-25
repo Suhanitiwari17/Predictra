@@ -741,3 +741,515 @@ footer span {
   font-size: 12px;
   outline-color: #5865d8;
 }
+
+
+/* ==========================================
+   PREDICTRA — INDUSTRIAL CONTROL ROOM THEME
+   ========================================== */
+
+:root {
+  color-scheme: dark;
+  --machine-bg: #171a16;
+  --machine-sidebar: #10120f;
+  --machine-panel: #20231e;
+  --machine-panel-raised: #262a23;
+  --machine-border: #414638;
+  --machine-text: #ece7d8;
+  --machine-muted: #a2a595;
+  --machine-orange: #e58b37;
+  --machine-green: #b8cd72;
+  --machine-red: #e36d52;
+}
+
+.app-shell {
+  background: var(--machine-bg);
+  color: var(--machine-text);
+  font-family: "Avenir Next", "Helvetica Neue", sans-serif;
+}
+
+/* Left control panel */
+
+.sidebar {
+  background: var(--machine-sidebar);
+  color: var(--machine-text);
+  border-right: 1px solid #373b31;
+}
+
+.brand-icon {
+  background: var(--machine-orange);
+  color: #171a16;
+  border-radius: 5px;
+}
+
+.brand h2 {
+  color: var(--machine-text);
+  letter-spacing: -0.5px;
+}
+
+.brand span,
+.nav-heading {
+  color: var(--machine-muted);
+  font-family: "SFMono-Regular", Consolas, monospace;
+  letter-spacing: 1.5px;
+}
+
+.nav-item {
+  color: #b7b9ab;
+  border: 1px solid transparent;
+  border-radius: 4px;
+  transition: background 160ms ease, color 160ms ease;
+}
+
+.nav-item:hover {
+  background: #20231e;
+  color: var(--machine-text);
+}
+
+.nav-item.active {
+  background: #292d24;
+  color: var(--machine-orange);
+  border-color: #414638;
+  border-left: 3px solid var(--machine-orange);
+}
+
+.sidebar-bottom {
+  border-top: 1px solid #373b31;
+}
+
+.status-dot,
+.system-status > span,
+.tiny-dot.green {
+  background: var(--machine-green);
+  box-shadow: 0 0 8px #b8cd7244;
+}
+
+/* Main canvas: subtle technical grid */
+
+.main-content {
+  background-color: var(--machine-bg);
+  background-image:
+    linear-gradient(#ffffff06 1px, transparent 1px),
+    linear-gradient(90deg, #ffffff06 1px, transparent 1px);
+  background-size: 28px 28px;
+  color: var(--machine-text);
+}
+
+.topbar {
+  background: #171a16ee;
+  color: var(--machine-text);
+  border-bottom: 1px solid var(--machine-border);
+  backdrop-filter: blur(8px);
+}
+
+.breadcrumb,
+.mobile-brand {
+  color: var(--machine-muted);
+}
+
+.breadcrumb strong {
+  color: var(--machine-text);
+}
+
+.system-status {
+  background: #252b20;
+  color: var(--machine-green);
+  border: 1px solid #414a32;
+  border-radius: 4px;
+  font-family: "SFMono-Regular", Consolas, monospace;
+  letter-spacing: 1px;
+}
+
+.page-heading h1 {
+  color: var(--machine-text);
+  letter-spacing: -1px;
+}
+
+.subtitle {
+  color: var(--machine-muted);
+}
+
+.eyebrow {
+  color: var(--machine-orange);
+  font-family: "SFMono-Regular", Consolas, monospace;
+  font-size: 10px;
+  letter-spacing: 1.8px;
+  font-weight: 700;
+}
+
+.date-label {
+  color: var(--machine-orange);
+  background: #29251e;
+  border: 1px dashed #815a35;
+  border-radius: 4px;
+  font-family: "SFMono-Regular", Consolas, monospace;
+  letter-spacing: 1px;
+}
+
+/* Metric instruments */
+
+.metrics-grid {
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 14px;
+}
+
+.metric-card {
+  position: relative;
+  overflow: hidden;
+  background: linear-gradient(145deg, #262a23, #1d201b);
+  color: var(--machine-text);
+  border: 1px solid var(--machine-border);
+  border-radius: 7px;
+  box-shadow: none;
+}
+
+.metric-card::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 36px;
+  height: 3px;
+  background: var(--machine-orange);
+}
+
+.metric-top {
+  color: var(--machine-muted);
+}
+
+.metric-top svg {
+  color: var(--machine-orange);
+}
+
+.metric-card h2 {
+  color: var(--machine-text);
+  font-family: "SFMono-Regular", Consolas, monospace;
+}
+
+.metric-card p {
+  color: var(--machine-muted);
+}
+
+/* Main panels */
+
+.panel {
+  background: #20231e;
+  color: var(--machine-text);
+  border: 1px solid var(--machine-border);
+  border-radius: 7px;
+  box-shadow: 0 8px 24px #00000020;
+}
+
+.panel-heading h2 {
+  color: var(--machine-text);
+  letter-spacing: -0.4px;
+}
+
+.panel-description {
+  color: var(--machine-muted);
+}
+
+.heading-icon {
+  color: var(--machine-orange);
+  background: #30291f;
+  border: 1px solid #59442e;
+  border-radius: 5px;
+}
+
+.field-label {
+  color: #d0cebf;
+}
+
+/* Sensor form */
+
+.sensor-panel input,
+.sensor-panel select {
+  background: #151814;
+  color: var(--machine-text);
+  border: 1px solid #484d3f;
+  border-radius: 4px;
+  accent-color: var(--machine-orange);
+}
+
+.sensor-panel input:focus,
+.sensor-panel select:focus {
+  outline: 1px solid var(--machine-orange);
+  border-color: var(--machine-orange);
+}
+
+.predict-button {
+  background: var(--machine-orange);
+  color: #181a15;
+  border: 1px solid #f5a958;
+  border-radius: 4px;
+  font-weight: 800;
+  letter-spacing: 0.5px;
+  box-shadow: 0 3px 0 #8c4e22;
+  transition: transform 150ms ease, background 150ms ease;
+}
+
+.predict-button:hover:not(:disabled) {
+  background: #f3a34f;
+  transform: translateY(-1px);
+}
+
+.predict-button:active:not(:disabled) {
+  transform: translateY(1px);
+  box-shadow: none;
+}
+
+.predict-button:disabled {
+  opacity: 0.65;
+}
+
+.error-message {
+  color: #ff9d85;
+}
+
+/* Prediction results */
+
+.empty-state h3 {
+  color: var(--machine-text);
+}
+
+.empty-state p {
+  color: var(--machine-muted);
+}
+
+.empty-icon {
+  background: #2d3028;
+  color: var(--machine-orange);
+  border: 1px solid #515443;
+}
+
+.result-banner.healthy {
+  background: #252e21;
+  color: #dce8c5;
+  border: 1px solid #4d6040;
+  border-radius: 5px;
+}
+
+.result-banner.warning {
+  background: #35271d;
+  color: #ffca91;
+  border: 1px solid #88552e;
+  border-radius: 5px;
+}
+
+.probability-card {
+  background: #181b16;
+  border: 1px solid #3c4135;
+  border-radius: 5px;
+}
+
+.result-label,
+.result-note {
+  color: var(--machine-muted);
+}
+
+.probability-value {
+  color: var(--machine-orange);
+  font-family: "SFMono-Regular", Consolas, monospace;
+}
+
+.progress-track {
+  background: #393d32;
+}
+
+.progress-fill {
+  background: linear-gradient(90deg, #bd6a2d, #f2a34b);
+}
+
+.anomaly-card {
+  background: #272b23;
+  border: 1px solid #424739;
+  border-radius: 5px;
+}
+
+.anomaly-card.warning {
+  background: #35271d;
+  border-color: #88552e;
+}
+
+.anomaly-icon {
+  background: #30352a;
+  color: var(--machine-green);
+}
+
+.anomaly-card.warning .anomaly-icon {
+  background: #49301f;
+  color: var(--machine-orange);
+}
+
+.anomaly-card strong {
+  color: var(--machine-text);
+}
+
+.anomaly-card p {
+  color: var(--machine-muted);
+}
+
+.state-pill {
+  background: #303b27;
+  color: var(--machine-green);
+  border: 1px solid #596747;
+  border-radius: 3px;
+}
+
+.state-pill.alert {
+  background: #4a2d20;
+  color: #ffbd7a;
+  border-color: #88552e;
+}
+
+.model-note {
+  background: #191c17;
+  color: var(--machine-muted);
+  border: 1px solid #383d32;
+  border-radius: 4px;
+}
+
+/* Chart */
+
+.chart-container {
+  border-top: 1px solid #353a30;
+  padding-top: 12px;
+}
+
+/* Prediction history */
+
+.refresh-button {
+  background: #292d24;
+  color: var(--machine-orange);
+  border: 1px solid #665038;
+  border-radius: 4px;
+}
+
+.refresh-button:hover {
+  background: #373024;
+}
+
+.history-filters label {
+  color: #d0cebf;
+}
+
+.history-filters select {
+  background: #151814;
+  color: var(--machine-text);
+  border: 1px solid #484d3f;
+  border-radius: 4px;
+}
+
+.table-scroll {
+  border: 1px solid #383d32;
+  border-radius: 5px;
+}
+
+.history-table {
+  color: var(--machine-text);
+}
+
+.history-table th {
+  background: #292d24;
+  color: var(--machine-orange);
+  border-bottom: 1px solid #414638;
+  font-family: "SFMono-Regular", Consolas, monospace;
+  letter-spacing: 0.7px;
+}
+
+.history-table td {
+  color: #d0cebf;
+  border-bottom: 1px solid #34392f;
+}
+
+.history-table tbody tr {
+  background: #20231e;
+  transition: background 140ms ease;
+}
+
+.history-table tbody tr:hover {
+  background: #292d24;
+}
+
+.table-pill {
+  border-radius: 3px;
+  letter-spacing: 0.2px;
+}
+
+.pill-good {
+  background: #303b27;
+  color: var(--machine-green);
+}
+
+.pill-warning {
+  background: #49301f;
+  color: #ffbd7a;
+}
+
+.history-message {
+  color: var(--machine-muted);
+}
+
+footer {
+  color: #929687;
+  border-top: 1px solid #373b31;
+}
+
+/* Responsive metric cards */
+
+@media (max-width: 1100px) {
+  .metrics-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+@media (max-width: 560px) {
+  .metrics-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+button.nav-item {
+  width: 100%;
+  font: inherit;
+  text-align: left;
+  cursor: pointer;
+}
+
+button.nav-item:focus-visible {
+  outline: 2px solid var(--machine-orange);
+  outline-offset: 2px;
+}
+
+#overview,
+#machine-health,
+#predictions,
+#anomalies,
+#history-panel {
+  scroll-margin-top: 24px;
+}
+
+.history-error {
+  padding: 10px 12px;
+  background: #49301f;
+  color: #ffbd7a;
+  border: 1px solid #88552e;
+  border-radius: 4px;
+  font-size: 12px;
+}
+
+.refresh-button:disabled {
+  cursor: wait;
+  opacity: 0.7;
+}
+
+button.state-pill {
+  cursor: pointer;
+  pointer-events: auto;
+  position: relative;
+  z-index: 2;
+  font-family: inherit;
+}
+
+button.state-pill:hover {
+  filter: brightness(1.2);
+}
