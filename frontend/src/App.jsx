@@ -446,6 +446,68 @@ useEffect(() => {
 )}
 
                 </div>
+               
+<section className="failure-diagnostics">
+  <div className="panel-heading">
+    <div>
+      <p className="eyebrow">DIAGNOSTIC ANALYSIS</p>
+      <h2>Possible failure modes</h2>
+    </div>
+  </div>
+
+  <p className="panel-description">
+    Dataset-rule indicators and suggested inspection steps.
+    These are screening indicators, not confirmed diagnoses.
+  </p>
+
+  <div className="failure-mode-list">
+    {result.possible_failures?.map((failure) => (
+      <article
+        key={failure.code}
+        className={`failure-mode-item ${
+          failure.indicated === true
+            ? "mode-flagged"
+            : failure.indicated === null
+              ? "mode-unknown"
+              : "mode-clear"
+        }`}
+      >
+        <div className="failure-mode-title">
+          <div>
+            <span className="failure-mode-code">
+              {failure.code}
+            </span>
+            <h3>{failure.name}</h3>
+          </div>
+
+          <span className="failure-mode-status">
+            {failure.indicated === true
+              ? "INDICATOR TRIGGERED"
+              : failure.indicated === false
+                ? "NOT INDICATED"
+                : "NOT ASSESSABLE"}
+          </span>
+        </div>
+
+        <p className="failure-mode-reason">
+          {failure.reason}
+        </p>
+
+        <p className="failure-mode-action">
+          <strong>Suggested check:</strong>{" "}
+          {failure.suggested_check}
+        </p>
+      </article>
+    ))}
+  </div>
+
+  <p className="diagnostics-disclaimer">
+    Based on the synthetic AI4I 2020 dataset rules.
+    These indicators cannot confirm actual machine faults
+    or replace manufacturer guidance and safety procedures.
+  </p>
+</section>
+ 
               </>
             )}
 
@@ -662,3 +724,113 @@ useEffect(() => {
 }
 
 export default App;
+
+
+/* Failure-mode diagnostic panel */
+
+.failure-diagnostics {
+  margin-top: 22px;
+  padding: 22px;
+  background: #20231e;
+  border: 1px solid #414638;
+  border-radius: 7px;
+  color: #ece7d8;
+}
+
+.failure-diagnostics h2 {
+  color: #ece7d8;
+}
+
+.failure-mode-list {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 12px;
+  margin-top: 18px;
+}
+
+.failure-mode-item {
+  min-width: 0;
+  padding: 15px;
+  background: #181b16;
+  border: 1px solid #414638;
+  border-left: 3px solid #69705d;
+  border-radius: 5px;
+}
+
+.failure-mode-item.mode-flagged {
+  background: #30251c;
+  border-left-color: #e58b37;
+}
+
+.failure-mode-item.mode-unknown {
+  border-left-color: #888c7c;
+  border-style: dashed;
+}
+
+.failure-mode-title {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.failure-mode-code {
+  color: #e58b37;
+  font-family: "SFMono-Regular", Consolas, monospace;
+  font-size: 10px;
+  font-weight: 800;
+  letter-spacing: 1px;
+}
+
+.failure-mode-title h3 {
+  margin-top: 5px;
+  color: #ece7d8;
+  font-size: 13px;
+}
+
+.failure-mode-status {
+  flex-shrink: 0;
+  color: #b8cd72;
+  font-family: "SFMono-Regular", Consolas, monospace;
+  font-size: 9px;
+  font-weight: 800;
+  text-align: right;
+}
+
+.mode-flagged .failure-mode-status {
+  color: #ffbd7a;
+}
+
+.mode-unknown .failure-mode-status {
+  color: #b6b8ac;
+}
+
+.failure-mode-reason,
+.failure-mode-action {
+  margin-top: 12px;
+  color: #b7b9ab;
+  font-size: 11px;
+  line-height: 1.7;
+}
+
+.failure-mode-action strong {
+  color: #e58b37;
+}
+
+.diagnostics-disclaimer {
+  margin-top: 16px;
+  color: #929687;
+  font-size: 10px;
+  line-height: 1.6;
+}
+
+@media (max-width: 650px) {
+  .failure-mode-list {
+    grid-template-columns: 1fr;
+  }
+
+  .failure-mode-title {
+    flex-wrap: wrap;
+  }
+}
+
